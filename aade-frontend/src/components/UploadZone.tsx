@@ -1,5 +1,5 @@
 import React from 'react';
-import { Paper, Typography, Button, CircularProgress, Box } from '@mui/material';
+import { Paper, Typography, Button, CircularProgress } from '@mui/material';
 import { UploadCloud } from 'lucide-react';
 
 interface UploadZoneProps {

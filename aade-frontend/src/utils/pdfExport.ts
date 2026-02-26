@@ -38,7 +38,15 @@ const setUnicodeFont = (doc: jsPDF): void => {
     doc.setFont(PDF_FONT_NAME, 'normal');
 };
 
-export const exportResultsToPdf = async (results: BatchFileResult[], stats: any) => {
+interface Stats {
+    total: number;
+    passed: number;
+    failed: number;
+    warnings: number;
+    xmlErrors: number;
+}
+
+export const exportResultsToPdf = async (results: BatchFileResult[], stats: Stats) => {
     const doc = new jsPDF();
     await ensurePdfUnicodeFont(doc);
     
@@ -93,7 +101,7 @@ export const exportResultsToPdf = async (results: BatchFileResult[], stats: any)
                         bodyStyles: { font: PDF_FONT_NAME, fontStyle: 'normal' },
                     });
                     setUnicodeFont(doc);
-                    // @ts-ignore
+                    // @ts-expect-error - autoTable adds lastAutoTable property to jsPDF instance
                     yPos = doc.lastAutoTable.finalY + 10;
                 } else {
                     yPos += 5;

@@ -5,7 +5,6 @@ import {
     Button,
     Alert,
     Stack,
-    Divider,
     Container
 } from '@mui/material';
 import { Download, RotateCcw } from 'lucide-react';
@@ -15,14 +14,6 @@ import { ValidationStatus } from '../types';
 import type { BatchFileResult } from '../types';
 import { exportResultsToPdf } from '../utils/pdfExport';
 
-// Components
-[
-    './UploadZone',
-    './StatsCards',
-    './ResultItem' // I will create this next
-].forEach(() => {}); 
-
-// Temporary local import of ResultItem logic until created
 import ResultItem from '../components/ResultItem';
 import UploadZone from '../components/UploadZone';
 import StatsCards from '../components/StatsCards';
@@ -35,7 +26,7 @@ const Dashboard: React.FC = () => {
 
     const stats = useMemo(() => {
         if (!results) return null;
-        let total = results.length;
+        const total = results.length;
         let passed = 0;
         let warnings = 0;
         let failed = 0;
@@ -67,7 +58,7 @@ const Dashboard: React.FC = () => {
             try {
                 const data = await validateBatchXmls(files);
                 setResults(data);
-            } catch (err: any) {
+            } catch (err) {
                 console.error(err);
                 setError("Αδυναμία επικοινωνίας με την υπηρεσία ελέγχου.");
             } finally {
