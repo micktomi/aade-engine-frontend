@@ -1,0 +1,9 @@
+# Ignore UI folder for Rust builds
+ui/
+node_modules/
+
+# Ignore build artifacts
+target/
+.env
+.git
+.gitignore

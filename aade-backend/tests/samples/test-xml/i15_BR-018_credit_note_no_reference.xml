@@ -1,0 +1,38 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<InvoicesDoc>
+  <invoice>
+    <invoiceHeader>
+      <series>ERR</series>
+      <aa>18</aa>
+      <issueDate>2025-01-20</issueDate>
+      <invoiceType>5.1</invoiceType> 
+      <uid>ERROR18_NO_CORRELATED_INV_1234567</uid>
+      
+    </invoiceHeader>
+    
+    <invoiceDetails>
+      <lineNumber>1</lineNumber>
+      <netValue>50.00</netValue>
+      <vatCategory>1</vatCategory>
+      <vatAmount>12.00</vatAmount>
+    </invoiceDetails>
+    
+    <invoiceSummary>
+      <totalNetValue>50.00</totalNetValue>
+      <totalVatAmount>12.00</totalVatAmount>
+      <totalDeductionsAmount>0.00</totalDeductionsAmount><totalStampDutyAmount>0.00</totalStampDutyAmount><totalFeesAmount>0.00</totalFeesAmount><totalWithheldAmount>0.00</totalWithheldAmount><totalGrossValue>62.00</totalGrossValue>
+      
+      <incomeClassification>
+        <classificationType>E3_561_001</classificationType>
+        <classificationCategory>category1_1</classificationCategory>
+        <amount>50.00</amount>
+      </incomeClassification>
+    </invoiceSummary>
+    
+    <issuer>
+      <vatNumber>090000045</vatNumber>
+      <country>GR</country>
+      <branch>0</branch>
+    </issuer>
+  </invoice>
+</InvoicesDoc>

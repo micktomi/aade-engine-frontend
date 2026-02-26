@@ -1,0 +1,601 @@
+version: "1.0"
+description: "Production-ready myDATA validation rules for Greek AADE invoices"
+
+rules:
+  # ============================================================
+  # SECTION 1: COUNTERPART VALIDATION
+  # ============================================================
+
+  - id: "CP-001"
+    description: "Counterpart required for B2B invoices"
+    severity: "Error"
+    logic:
+      type: "CounterpartRequired"
+      invoice_types: ["1.1", "1.2", "2.1", "5.1"]
+    error_message: "Το παραστατικό τύπου {invoice_type} απαιτεί Λήπτη (Counterpart). Τα Β2Β τιμολόγια πρέπει να έχουν ΑΦΜ λήπτη."
+
+  - id: "CP-002"
+    description: "Intra-EU sales must have non-Greek counterpart"
+    severity: "Error"
+    logic:
+      type: "CounterpartCountry"
+      invoice_types: ["1.2"]
+      excluded_countries: ["GR"]
+    error_message: "Ενδοκοινοτικές παραδόσεις (1.2) δεν μπορούν να έχουν Ελληνικό λήπτη (GR). Η χώρα πρέπει να είναι άλλο κράτος-μέλος ΕΕ."
+
+  - id: "CP-003"
+    description: "Third Country Sales require non-EU counterpart"
+    severity: "Error"
+    logic:
+      type: "CounterpartCountry"
+      invoice_types: ["1.3"]
+      excluded_countries: ["GR", "AT", "BE", "BG", "HR", "CY", "CZ", "DK", "EE", "FI", "FR", "DE", "EL", "HU", "IE", "IT", "LV", "LT", "LU", "MT", "NL", "PL", "PT", "RO", "SK", "SI", "ES", "SE"]
+    error_message: "Πωλήσεις Τρίτων Χωρών (1.3) απαιτούν λήπτη εκτός ΕΕ."
+
+  - id: "CP-004"
+    description: "Related Party Sales require counterpart"
+    severity: "Error"
+    logic:
+      type: "CounterpartRequired"
+      invoice_types: ["1.4"]
+    error_message: "Πωλήσεις Συνδεδεμένων (1.4) απαιτούν Λήπτη (counterpart)."
+
+  - id: "CP-005"
+    description: "Cross-Border Retail requires non-GR counterpart"
+    severity: "Error"
+    logic:
+      type: "CounterpartCountry"
+      invoice_types: ["1.5"]
+      excluded_countries: ["GR"]
+    error_message: "Διασυνοριακή Λιανική (1.5) απαιτεί λήπτη εκτός Ελλάδας."
+
+  - id: "CP-006"
+    description: "Foreign VAT Sales require non-GR counterpart"
+    severity: "Error"
+    logic:
+      type: "CounterpartCountry"
+      invoice_types: ["1.6"]
+      excluded_countries: ["GR"]
+    error_message: "Ξένο ΦΠΑ (1.6) απαιτεί λήπτη εκτός Ελλάδας."
+
+  - id: "CP-007"
+    description: "Intra-EU Services require non-GR EU counterpart"
+    severity: "Error"
+    logic:
+      type: "CounterpartCountry"
+      invoice_types: ["2.2"]
+      excluded_countries: ["GR"]
+    error_message: "Ενδοκοινοτικές Παροχές (2.2) απαιτούν λήπτη εντός ΕΕ αλλά εκτός GR."
+
+  - id: "CP-008"
+    description: "Third Country Services require non-EU counterpart"
+    severity: "Error"
+    logic:
+      type: "CounterpartCountry"
+      invoice_types: ["2.3"]
+      excluded_countries: ["GR", "AT", "BE", "BG", "HR", "CY", "CZ", "DK", "EE", "FI", "FR", "DE", "EL", "HU", "IE", "IT", "LV", "LT", "LU", "MT", "NL", "PL", "PT", "RO", "SK", "SI", "ES", "SE"]
+    error_message: "Παροχές Τρίτων Χωρών (2.3) απαιτούν λήπτη εκτός ΕΕ."
+
+  # ============================================================
+  # SECTION 2: VAT VALIDATION BY INVOICE TYPE
+  # ============================================================
+
+  - id: "VAT-001"
+    description: "Sales Invoice (1.1) - Standard VAT rates only"
+    severity: "Error"
+    logic:
+      type: "HeaderDependencyLine"
+      header_field: "invoice_type"
+      header_value: "1.1"
+      line_check_field: "vat_category"
+      allowed_values: ["1", "2", "3", "7", "8"]  # 24%, 13%, 6%, 0%, Exempt
+    error_message: "Τιμολόγιο Πώλησης (1.1): Η γραμμή {line} έχει μη επιτρεπτή κατηγορία ΦΠΑ. Επιτρέπονται μόνο: 24%, 13%, 6%, 0%, Άνευ ΦΠΑ."
+
+  - id: "VAT-002"
+    description: "Intra-EU Sales (1.2) - Must be 0% or Exempt VAT"
+    severity: "Error"
+    logic:
+      type: "HeaderDependencyLine"
+      header_field: "invoice_type"
+      header_value: "1.2"
+      line_check_field: "vat_category"
+      allowed_values: ["7", "8"]  # 0% or Exempt only
+    error_message: "Ενδοκοινοτικές Παραδόσεις (1.2): Η γραμμή {line} πρέπει να έχει ΦΠΑ 0% ή Άνευ ΦΠΑ."
+
+  - id: "VAT-003"
+    description: "Service Invoice (2.1) - Standard rates"
+    severity: "Error"
+    logic:
+      type: "HeaderDependencyLine"
+      header_field: "invoice_type"
+      header_value: "2.1"
+      line_check_field: "vat_category"
+      allowed_values: ["1", "2", "3", "7", "8"]
+    error_message: "Τιμολόγιο Παροχής (2.1): Η γραμμή {line} έχει μη επιτρεπτή κατηγορία ΦΠΑ."
+
+  - id: "VAT-004"
+    description: "Retail Receipt (11.1) - Standard rates"
+    severity: "Error"
+    logic:
+      type: "HeaderDependencyLine"
+      header_field: "invoice_type"
+      header_value: "11.1"
+      line_check_field: "vat_category"
+      allowed_values: ["1", "2", "3", "7", "8"]
+    error_message: "ΑΛΠ (11.1): Η γραμμή {line} έχει μη επιτρεπτή κατηγορία ΦΠΑ."
+
+  - id: "VAT-005"
+    description: "Service Receipt (11.2) - Standard rates"
+    severity: "Error"
+    logic:
+      type: "HeaderDependencyLine"
+      header_field: "invoice_type"
+      header_value: "11.2"
+      line_check_field: "vat_category"
+      allowed_values: ["1", "2", "3", "7", "8"]
+    error_message: "ΑΠΥ (11.2): Η γραμμή {line} έχει μη επιτρεπτή κατηγορία ΦΠΑ."
+
+  - id: "VAT-006"
+    description: "Credit Note (5.1) - Standard rates"
+    severity: "Error"
+    logic:
+      type: "HeaderDependencyLine"
+      header_field: "invoice_type"
+      header_value: "5.1"
+      line_check_field: "vat_category"
+      allowed_values: ["1", "2", "3", "7", "8"]
+    error_message: "Πιστωτικό Τιμολόγιο (5.1): Η γραμμή {line} έχει μη επιτρεπτή κατηγορία ΦΠΑ."
+
+  - id: "VAT-007"
+    description: "Third Country Sales (1.3) - Must be 0% or Exempt VAT"
+    severity: "Error"
+    logic:
+      type: "HeaderDependencyLine"
+      header_field: "invoice_type"
+      header_value: "1.3"
+      line_check_field: "vat_category"
+      allowed_values: ["7", "8"]
+    error_message: "Πωλήσεις Τρίτων Χωρών (1.3): Η γραμμή {line} πρέπει να έχει ΦΠΑ 0% ή Άνευ ΦΠΑ (εξαγωγή)."
+
+  - id: "VAT-008"
+    description: "Related Party Sales (1.4) - Standard VAT rates"
+    severity: "Error"
+    logic:
+      type: "HeaderDependencyLine"
+      header_field: "invoice_type"
+      header_value: "1.4"
+      line_check_field: "vat_category"
+      allowed_values: ["1", "2", "3", "7", "8"]
+    error_message: "Πωλήσεις Συνδεδεμένων (1.4): Η γραμμή {line} έχει μη επιτρεπτή κατηγορία ΦΠΑ."
+
+  - id: "VAT-009"
+    description: "Cross-Border Retail Sales (1.5) - VAT depends on destination"
+    severity: "Warning"
+    logic:
+      type: "HeaderDependencyLine"
+      header_field: "invoice_type"
+      header_value: "1.5"
+      line_check_field: "vat_category"
+      allowed_values: ["1", "2", "3", "7", "8"]
+    error_message: "Διασυνοριακή Λιανική (1.5): Ελέγξτε αν ο ΦΠΑ της γραμμής {line} είναι σωστός για τη χώρα προορισμού."
+
+  - id: "VAT-010"
+    description: "Foreign VAT Sales (1.6) - Typically 0% or Exempt"
+    severity: "Warning"
+    logic:
+      type: "HeaderDependencyLine"
+      header_field: "invoice_type"
+      header_value: "1.6"
+      line_check_field: "vat_category"
+      allowed_values: ["7", "8"]
+    error_message: "Ξένο ΦΠΑ (1.6): Η γραμμή {line} συνήθως έχει 0% ή Άνευ ΦΠΑ (reverse charge)."
+
+  - id: "VAT-011"
+    description: "Intra-EU Services (2.2) - Must be 0% or Exempt"
+    severity: "Error"
+    logic:
+      type: "HeaderDependencyLine"
+      header_field: "invoice_type"
+      header_value: "2.2"
+      line_check_field: "vat_category"
+      allowed_values: ["7", "8"]
+    error_message: "Ενδοκοινοτικές Παροχές (2.2): Η γραμμή {line} πρέπει να έχει ΦΠΑ 0% ή Άνευ ΦΠΑ."
+
+  - id: "VAT-012"
+    description: "Third Country Services (2.3) - Must be 0% or Exempt"
+    severity: "Error"
+    logic:
+      type: "HeaderDependencyLine"
+      header_field: "invoice_type"
+      header_value: "2.3"
+      line_check_field: "vat_category"
+      allowed_values: ["7", "8"]
+    error_message: "Παροχές Τρίτων Χωρών (2.3): Η γραμμή {line} πρέπει να έχει ΦΠΑ 0% ή Άνευ ΦΠΑ."
+
+  - id: "VAT-013"
+    description: "Related Party Services (2.4) - Standard VAT rates"
+    severity: "Error"
+    logic:
+      type: "HeaderDependencyLine"
+      header_field: "invoice_type"
+      header_value: "2.4"
+      line_check_field: "vat_category"
+      allowed_values: ["1", "2", "3", "7", "8"]
+    error_message: "Παροχές Συνδεδεμένων (2.4): Η γραμμή {line} έχει μη επιτρεπτή κατηγορία ΦΠΑ."
+
+  - id: "VAT-014"
+    description: "Debit Note (5.2) - Standard VAT rates"
+    severity: "Error"
+    logic:
+      type: "HeaderDependencyLine"
+      header_field: "invoice_type"
+      header_value: "5.2"
+      line_check_field: "vat_category"
+      allowed_values: ["1", "2", "3", "7", "8"]
+    error_message: "Χρεωστικό Τιμολόγιο (5.2): Η γραμμή {line} έχει μη επιτρεπτή κατηγορία ΦΠΑ."
+
+  - id: "VAT-015"
+    description: "Simplified Invoice (11.3) - Standard VAT rates"
+    severity: "Error"
+    logic:
+      type: "HeaderDependencyLine"
+      header_field: "invoice_type"
+      header_value: "11.3"
+      line_check_field: "vat_category"
+      allowed_values: ["1", "2", "3", "7", "8"]
+    error_message: "Απλοποιημένο Τιμολόγιο (11.3): Η γραμμή {line} έχει μη επιτρεπτή κατηγορία ΦΠΑ."
+
+  - id: "VAT-016"
+    description: "Retail Credit Note (11.4) - Standard VAT rates"
+    severity: "Error"
+    logic:
+      type: "HeaderDependencyLine"
+      header_field: "invoice_type"
+      header_value: "11.4"
+      line_check_field: "vat_category"
+      allowed_values: ["1", "2", "3", "7", "8"]
+    error_message: "Πιστωτικό Λιανικής (11.4): Η γραμμή {line} έχει μη επιτρεπτή κατηγορία ΦΠΑ."
+
+  - id: "VAT-017"
+    description: "Service Credit Note (11.5) - Standard VAT rates"
+    severity: "Error"
+    logic:
+      type: "HeaderDependencyLine"
+      header_field: "invoice_type"
+      header_value: "11.5"
+      line_check_field: "vat_category"
+      allowed_values: ["1", "2", "3", "7", "8"]
+    error_message: "Πιστωτικό Παροχής (11.5): Η γραμμή {line} έχει μη επιτρεπτή κατηγορία ΦΠΑ."
+
+  - id: "VAT-EXM-001"
+    description: "VAT 0% lines require VAT exemption cause"
+    severity: "Error"
+    logic:
+      type: "LineConditionalRequired"
+      when_field: "vat_category"
+      when_values: ["7"]
+      required_field: "vat_exemption_cause"
+    error_message: "Γραμμή {line}: Για κατηγορία ΦΠΑ 0% (7) απαιτείται αιτία απαλλαγής ΦΠΑ (vatExemptionCause)."
+
+  # ============================================================
+  # SECTION 3: LEGACY VAT RATES WARNING
+  # ============================================================
+
+  - id: "VAT-LEGACY-001"
+    description: "Warning for legacy VAT rates"
+    severity: "Warning"
+    logic:
+      type: "LineValueAllowed"
+      field_path: "vat_category"
+      allowed_values: ["1", "2", "3", "7", "8"]  # Exclude 4, 5, 6 (legacy rates)
+    error_message: "Προσοχή: Χρησιμοποιείται παλαιός συντελεστής ΦΠΑ (17%, 9%, 4%). Βεβαιωθείτε ότι είναι σωστός για την περίοδο."
+
+  # ============================================================
+  # SECTION 4: CLASSIFICATION RULES
+  # ============================================================
+
+  - id: "CLS-001"
+    description: "B2B Invoices require income classifications"
+    severity: "Error"
+    logic:
+      type: "ClassificationRequired"
+      invoice_types: ["1.1", "1.2", "2.1"]
+      min_classifications: 1
+    error_message: "Το παραστατικό B2B απαιτεί τουλάχιστον μία Χαρακτηρισμό Εσόδου. Βρέθηκαν {count}."
+
+  - id: "CLS-002"
+    description: "Intra-EU sales require specific E3_881 classification"
+    severity: "Warning"
+    logic:
+      type: "ClassificationTypeRequired"
+      invoice_types: ["1.2"]
+      required_types: ["E3_881_003"]
+    error_message: "Ενδοκοινοτικές Παραδόσεις (1.2) συνήθως απαιτούν χαρακτηρισμό E3_881_003. Ελέγξτε αν λείπει."
+
+  - id: "CLS-004"
+    description: "Related Party Sales require income classification"
+    severity: "Error"
+    logic:
+      type: "ClassificationRequired"
+      invoice_types: ["1.4"]
+      min_classifications: 1
+    error_message: "Πωλήσεις Συνδεδεμένων (1.4) απαιτούν Χαρακτηρισμό Εσόδου."
+
+  - id: "CLS-005"
+    description: "Intra-EU Services require E3_881 classification"
+    severity: "Warning"
+    logic:
+      type: "ClassificationTypeRequired"
+      invoice_types: ["2.2"]
+      required_types: ["E3_881_003"]
+    error_message: "Ενδοκοινοτικές Παροχές (2.2) συνήθως απαιτούν χαρακτηρισμό E3_881_003."
+
+  - id: "CLS-006"
+    description: "Related Party Services require income classification"
+    severity: "Error"
+    logic:
+      type: "ClassificationRequired"
+      invoice_types: ["2.4"]
+      min_classifications: 1
+    error_message: "Παροχές Συνδεδεμένων (2.4) απαιτούν Χαρακτηρισμό Εσόδου."
+
+  # Note: CLS-003 removed - too strict for general validation
+  # Each business may use different E3_561 subcategories based on their revenue type
+  # E3_561_001: Wholesale of goods
+  # E3_561_002: Retail of goods (own production)
+  # E3_561_003: Retail of goods (resale)
+  # E3_561_005: Revenue from sales on behalf of third parties
+  # Not all invoices will have all types - depends on business model
+
+  # ============================================================
+  # SECTION 5: NEGATIVE AMOUNTS VALIDATION
+  # ============================================================
+
+  - id: "NEG-001"
+    description: "Credit Notes must have negative amounts"
+    severity: "Error"
+    logic:
+      type: "NegativeAmountsOnly"
+      invoice_types: ["5.1"]
+    error_message: "Πιστωτικό Τιμολόγιο (5.1): Η γραμμή {line} πρέπει να έχει αρνητικό ποσό. Βρέθηκε θετικό."
+
+  - id: "NEG-002"
+    description: "Normal invoices cannot have negative amounts"
+    severity: "Error"
+    logic:
+      type: "NoNegativeAmounts"
+      invoice_types: ["1.1", "1.2", "2.1", "11.1", "11.2"]
+    error_message: "Το παραστατικό δεν επιτρέπει αρνητικά ποσά. Γραμμή {line} έχει αρνητική αξία. Χρησιμοποιήστε Πιστωτικό (5.1)."
+
+  - id: "NEG-003"
+    description: "Retail Credit Notes must have negative amounts"
+    severity: "Error"
+    logic:
+      type: "NegativeAmountsOnly"
+      invoice_types: ["11.4"]
+    error_message: "Πιστωτικό Λιανικής (11.4): Η γραμμή {line} πρέπει να έχει αρνητικό ποσό."
+
+  - id: "NEG-004"
+    description: "Service Credit Notes must have negative amounts"
+    severity: "Error"
+    logic:
+      type: "NegativeAmountsOnly"
+      invoice_types: ["11.5"]
+    error_message: "Πιστωτικό Παροχής (11.5): Η γραμμή {line} πρέπει να έχει αρνητικό ποσό."
+
+  - id: "CRN-001"
+    description: "Credit documents require correlated invoice reference"
+    severity: "Error"
+    logic:
+      type: "HeaderConditionalRequired"
+      when_field: "invoice_type"
+      when_values: ["5.1", "11.4", "11.5"]
+      required_field: "correlated_invoices"
+    error_message: "Τα πιστωτικά παραστατικά απαιτούν συσχέτιση με αρχικό παραστατικό (correlatedInvoices)."
+
+  - id: "DBT-001"
+    description: "Debit Notes must reference original invoice"
+    severity: "Error"
+    logic:
+      type: "HeaderConditionalRequired"
+      when_field: "invoice_type"
+      when_values: ["5.2"]
+      required_field: "correlated_invoices"
+    error_message: "Χρεωστικό Τιμολόγιο (5.2) απαιτεί συσχέτιση με αρχικό παραστατικό (correlatedInvoices)."
+
+  - id: "DBT-002"
+    description: "Debit Notes should have positive amounts"
+    severity: "Error"
+    logic:
+      type: "NoNegativeAmounts"
+      invoice_types: ["5.2"]
+    error_message: "Χρεωστικό Τιμολόγιο (5.2): Η γραμμή {line} δεν μπορεί να έχει αρνητικό ποσό."
+
+  # ============================================================
+  # SECTION 6: CURRENCY VALIDATION
+  # ============================================================
+
+  - id: "CUR-001"
+    description: "Non-EUR invoices must have exchange rate"
+    severity: "Error"
+    logic:
+      type: "CurrencyExchangeRate"
+      default_currency: "EUR"
+    error_message: "Το παραστατικό είναι σε ξένο νόμισμα ({currency}) αλλά δεν έχει Ισοτιμία (Exchange Rate). Είναι υποχρεωτική."
+
+  - id: "PAY-001"
+    description: "Payment method type must be valid"
+    severity: "Error"
+    logic:
+      type: "PaymentMethodValueAllowed"
+      field_path: "type"
+      allowed_values: ["1", "3", "5", "7"]
+    error_message: "Μη έγκυρος τύπος τρόπου πληρωμής στη γραμμή πληρωμής {line}. Επιτρεπτές τιμές: 1, 3, 5, 7."
+
+  # ============================================================
+  # SECTION 7: SPECIAL BUSINESS RULES
+  # ============================================================
+
+  - id: "BIZ-001"
+    description: "Retail receipts (ALP) typically don't require counterpart"
+    severity: "Info"
+    logic:
+      type: "LineValueAllowed"  # Placeholder - informational only
+      field_path: "vat_category"
+      allowed_values: ["1", "2", "3", "7", "8"]
+    error_message: "Πληροφοριακό: ΑΛΠ (11.1) συνήθως δεν απαιτούν Λήπτη για λιανικές πωλήσεις."
+
+  - id: "BIZ-002"
+    description: "Service receipts (APY) behavior similar to ALP"
+    severity: "Info"
+    logic:
+      type: "LineValueAllowed"  # Placeholder
+      field_path: "vat_category"
+      allowed_values: ["1", "2", "3", "7", "8"]
+    error_message: "Πληροφοριακό: ΑΠΥ (11.2) συνήθως δεν απαιτούν Λήπτη για λιανικές υπηρεσίες."
+
+  - id: "BIZ-003"
+    description: "Simplified Invoices typically don't require counterpart"
+    severity: "Info"
+    logic:
+      type: "LineValueAllowed"
+      field_path: "vat_category"
+      allowed_values: ["1", "2", "3", "7", "8"]
+    error_message: "Πληροφοριακό: Απλοποιημένο Τιμολόγιο (11.3) συνήθως δεν απαιτεί Λήπτη για B2C συναλλαγές."
+
+  # ============================================================
+  # SECTION 8: DATA QUALITY WARNINGS
+  # ============================================================
+
+  - id: "QUALITY-001"
+    description: "Uncommon VAT rate usage warning"
+    severity: "Warning"
+    logic:
+      type: "HeaderDependencyLine"
+      header_field: "invoice_type"
+      header_value: "1.1"
+      line_check_field: "vat_category"
+      allowed_values: ["1", "2"]  # Most common: 24% and 13%
+    error_message: "Προσοχή: Η γραμμή {line} χρησιμοποιεί ασυνήθιστο συντελεστή ΦΠΑ για τιμολόγιο πώλησης. Ελέγξτε αν είναι σωστό."
+
+  - id: "QUALITY-002"
+    description: "Zero VAT in regular sales - review needed"
+    severity: "Warning"
+    logic:
+      type: "HeaderDependencyLine"
+      header_field: "invoice_type"
+      header_value: "1.1"
+      line_check_field: "vat_category"
+      allowed_values: ["1", "2", "3"]  # Warn if 0% or Exempt
+    error_message: "Προσοχή: Γραμμή {line} έχει 0% ή Άνευ ΦΠΑ σε τιμολόγιο πώλησης. Ελέγξτε αν ισχύει εξαίρεση (π.χ. Άρθρο 43)."
+
+  # ============================================================
+  # SECTION 9: COMPREHENSIVE VAT CHECKS (All Types)
+  # ============================================================
+
+  - id: "VAT-MASTER-001"
+    description: "All invoice types must use valid VAT categories"
+    severity: "Error"
+    logic:
+      type: "LineValueAllowed"
+      field_path: "vat_category"
+      allowed_values: ["1", "2", "3", "4", "5", "6", "7", "8"]
+    error_message: "Η γραμμή περιέχει άγνωστη κατηγορία ΦΠΑ. Επιτρεπτές τιμές: 1-8."
+
+  # ============================================================
+  # SECTION 10: FINANCIAL FIELDS VALIDATION (Phase 2)
+  # ============================================================
+
+  # Withheld Tax Rules
+  - id: "WTH-001"
+    description: "Withheld tax must be non-negative"
+    severity: "Error"
+    logic:
+      type: "TotalFieldNonNegative"
+      field_path: "total_withheld_amount"
+      invoice_types: null
+    error_message: "Παρακρατούμενοι Φόροι δεν μπορούν να είναι αρνητικοί."
+
+  - id: "WTH-002"
+    description: "Withheld tax percentage validation (20%)"
+    severity: "Warning"
+    logic:
+      type: "WithheldTaxPercentage"
+      expected_rate: 0.20
+      tolerance: 0.01
+    error_message: "Παρακρατούμενος φόρος {actual} δεν αντιστοιχεί στο αναμενόμενο {expected}. Ελέγξτε τον υπολογισμό."
+
+  # Stamp Duty Rules
+  - id: "STM-001"
+    description: "Stamp duty must be non-negative"
+    severity: "Error"
+    logic:
+      type: "TotalFieldNonNegative"
+      field_path: "total_stamp_duty_amount"
+      invoice_types: null
+    error_message: "Χαρτόσημο δεν μπορεί να είναι αρνητικό."
+
+  - id: "STM-002"
+    description: "Stamp duty percentage validation (3.6%)"
+    severity: "Warning"
+    logic:
+      type: "StampDutyPercentage"
+      expected_rate: 0.036
+      tolerance: 0.005
+    error_message: "Χαρτόσημο {actual} δεν αντιστοιχεί στο αναμενόμενο {expected} (3.6%). Ελέγξτε τον υπολογισμό."
+
+  # Fees Rules
+  - id: "FEE-001"
+    description: "Fees must be non-negative"
+    severity: "Error"
+    logic:
+      type: "TotalFieldNonNegative"
+      field_path: "total_fees_amount"
+      invoice_types: null
+    error_message: "Λοιπές Επιβαρύνσεις δεν μπορούν να είναι αρνητικές."
+
+  # Deductions Rules
+  - id: "DED-001"
+    description: "Deductions must be non-negative"
+    severity: "Error"
+    logic:
+      type: "TotalFieldNonNegative"
+      field_path: "total_deductions_amount"
+      invoice_types: null
+    error_message: "Εκπτώσεις δεν μπορούν να είναι αρνητικές."
+
+  - id: "DED-002"
+    description: "Deductions cannot exceed net amount"
+    severity: "Error"
+    logic:
+      type: "TotalFieldComparison"
+      field_a: "total_deductions_amount"
+      field_b: "total_net_amount"
+      comparison: "LessThanOrEqual"
+    error_message: "Εκπτώσεις ({value_a}) δεν μπορούν να υπερβαίνουν το Καθαρό Ποσό ({value_b})."
+
+  # Branch Validation Rules
+  - id: "BRN-001"
+    description: "Issuer branch must be non-negative"
+    severity: "Error"
+    logic:
+      type: "FieldNonNegative"
+      field_path: "issuer.branch"
+    error_message: "Αριθμός υποκαταστήματος εκδότη πρέπει να είναι >= 0."
+
+  - id: "BRN-002"
+    description: "Counterpart branch must be non-negative"
+    severity: "Error"
+    logic:
+      type: "FieldNonNegative"
+      field_path: "counterpart.branch"
+    error_message: "Αριθμός υποκαταστήματος λήπτη πρέπει να είναι >= 0."
+
+  # Line Amount Validation
+  - id: "AMT-001"
+    description: "Line net value should not be zero"
+    severity: "Warning"
+    logic:
+      type: "LineFieldNonZero"
+      field_path: "net_value"
+    error_message: "Γραμμή {line} έχει μηδενική καθαρή αξία. Ελέγξτε αν είναι σωστό."

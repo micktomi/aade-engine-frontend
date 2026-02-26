@@ -1,0 +1,38 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<InvoicesDoc>
+  <invoice>
+    <invoiceHeader>
+      <series>R</series>
+      <aa>5</aa>
+      <issueDate>2025-01-20</issueDate>
+      <invoiceType>3.1</invoiceType>
+      <uid>RETAIL_12345678901234567890123456</uid>
+    </invoiceHeader>
+    
+    <invoiceDetails>
+      <lineNumber>1</lineNumber>
+      <netValue>80.65</netValue>
+      <vatCategory>1</vatCategory>
+      <vatAmount>19.35</vatAmount>
+    </invoiceDetails>
+    
+    <invoiceSummary>
+      <totalNetValue>80.65</totalNetValue>
+      <totalVatAmount>19.35</totalVatAmount>
+      <totalDeductionsAmount>0.00</totalDeductionsAmount><totalStampDutyAmount>0.00</totalStampDutyAmount><totalFeesAmount>0.00</totalFeesAmount><totalWithheldAmount>0.00</totalWithheldAmount><totalGrossValue>100.00</totalGrossValue>
+    <incomeClassification><classificationType>E3_561_001</classificationType><classificationCategory>category1_3</classificationCategory><amount>80.65</amount></incomeClassification></invoiceSummary>
+    
+    <issuer>
+      <vatNumber>090000045</vatNumber>
+      <country>GR</country>
+      <branch>0</branch>
+    </issuer>
+    
+    <paymentMethods>
+      <paymentMethodDetails>
+        <type>1</type>
+        <amount>100.00</amount>
+      </paymentMethodDetails>
+    </paymentMethods>
+  </invoice>
+</InvoicesDoc>

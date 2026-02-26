@@ -1,0 +1,51 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<ns0:InvoicesDoc xmlns:ns0="http://www.aade.gr/myDATA/invoice/v1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.aade.gr/myDATA/invoice/v1.0/InvoicesDoc-v0.6.xsd">
+  <ns0:invoice>
+    <ns0:issuer>
+      <ns0:vatNumber>123456789</ns0:vatNumber>
+      <ns0:country>GR</ns0:country>
+      <ns0:branch>0</ns0:branch>
+    </ns0:issuer>
+    <ns0:counterpart>
+      <ns0:vatNumber>987654321</ns0:vatNumber>
+      <ns0:country>GR</ns0:country>
+      <ns0:branch>0</ns0:branch>
+      <ns0:name>Test Customer</ns0:name>
+    </ns0:counterpart>
+    <ns0:invoiceHeader>
+      <ns0:series>A</ns0:series>
+      <ns0:aa>2</ns0:aa>
+      <ns0:issueDate>2023-10-27</ns0:issueDate>
+      <ns0:invoiceType>1.1</ns0:invoiceType>
+      <ns0:currency>EUR</ns0:currency>
+    </ns0:invoiceHeader>
+    <ns0:paymentMethods>
+      <ns0:paymentMethodDetails>
+        <ns0:type>3</ns0:type>
+        <ns0:amount>248.00</ns0:amount>
+        <ns0:paymentMethodInfo>Bank Transfer</ns0:paymentMethodInfo>
+      </ns0:paymentMethodDetails>
+    </ns0:paymentMethods>
+    <ns0:invoiceDetails>
+      <ns0:lineNumber>1</ns0:lineNumber>
+      <ns0:netValue>100.00</ns0:netValue>
+      <ns0:vatCategory>1</ns0:vatCategory>
+      <ns0:vatAmount>24.00</ns0:vatAmount>
+    </ns0:invoiceDetails>
+    <ns0:invoiceSummary>
+      
+      <ns0:totalNetValue>200.00</ns0:totalNetValue>
+      <ns0:totalVatAmount>48.00</ns0:totalVatAmount>
+      <ns0:totalWithheldAmount>0.00</ns0:totalWithheldAmount>
+      <ns0:totalFeesAmount>0.00</ns0:totalFeesAmount>
+      <ns0:totalStampDutyAmount>0.00</ns0:totalStampDutyAmount>
+      <ns0:totalDeductionsAmount>0.00</ns0:totalDeductionsAmount>
+      <ns0:totalGrossValue>248.00</ns0:totalGrossValue>
+      <ns0:incomeClassification>
+        <ns0:classificationType>E3_561_001</ns0:classificationType>
+        <ns0:classificationCategory>category1_1</ns0:classificationCategory>
+        <ns0:amount>200.00</ns0:amount>
+      </ns0:incomeClassification>
+    </ns0:invoiceSummary>
+  </ns0:invoice>
+</ns0:InvoicesDoc>

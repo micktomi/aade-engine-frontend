@@ -1,0 +1,61 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<InvoicesDoc>
+  <invoice>
+    <invoiceHeader>
+      <series>B</series>
+      <aa>2</aa>
+      <issueDate>2025-01-20</issueDate>
+      <invoiceType>1.1</invoiceType>
+      <uid>ABCDEF1234567890ABCDEF1234567890</uid>
+    </invoiceHeader>
+    
+    <invoiceDetails>
+      <lineNumber>1</lineNumber>
+      <netValue>150.00</netValue>
+      <vatCategory>1</vatCategory>
+      <vatAmount>36.00</vatAmount>
+    </invoiceDetails>
+    
+    <invoiceDetails>
+      <lineNumber>2</lineNumber>
+      <netValue>50.00</netValue>
+      <vatCategory>2</vatCategory>
+      <vatAmount>6.50</vatAmount>
+    </invoiceDetails>
+    
+    <invoiceSummary>
+      <totalNetValue>200.00</totalNetValue>
+      <totalVatAmount>42.50</totalVatAmount>
+      <totalWithheldAmount>0.00</totalWithheldAmount>
+      <totalFeesAmount>0.00</totalFeesAmount>
+      <totalStampDutyAmount>0.00</totalStampDutyAmount>
+      <totalDeductionsAmount>0.00</totalDeductionsAmount>
+      <totalGrossValue>242.50</totalGrossValue>
+      
+      <incomeClassification>
+        <classificationType>E3_561_001</classificationType>
+        <classificationCategory>category1_1</classificationCategory>
+        <amount>200.00</amount>
+      </incomeClassification>
+    </invoiceSummary>
+    
+    <issuer>
+      <vatNumber>090000045</vatNumber>
+      <country>GR</country>
+      <branch>0</branch>
+    </issuer>
+    
+    <counterpart>
+      <vatNumber>094014201</vatNumber>
+      <country>GR</country>
+      <branch>0</branch>
+    </counterpart>
+    
+    <paymentMethods>
+      <paymentMethodDetails>
+        <type>1</type>
+        <amount>242.50</amount>
+      </paymentMethodDetails>
+    </paymentMethods>
+  </invoice>
+</InvoicesDoc>
