@@ -1,3 +1,5 @@
 /target
 .env
 # Local env file (do not commit)
+.claude/
+tests/samples/test-xml/gen_*

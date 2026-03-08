@@ -15,6 +15,7 @@ RUN apt-get update && apt-get install -y libssl3 ca-certificates && rm -rf /var/
 
 COPY --from=builder /app/target/release/aade-validator /app/aade-validator
 COPY --from=builder /app/migrations /app/migrations
+COPY --from=builder /app/rules /app/rules
 
 EXPOSE 3000
 CMD ["/app/aade-validator"]
